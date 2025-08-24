@@ -37,9 +37,14 @@ def light_pixels(image, lightness, channel):
        
        # Figure out which slice of the array to use (0=R,1=G,2=B)
        idx = valid_channels.index(ch)
+       
+       # Build a boolean mask: True where pixel intensity exceeds the limit
+       mask = image[:, :, idx] > lightness
+       
+       # Count all True values (i.e., qualifying pixels)
+       count = int(mask.sum())
               
-    
-       return None
+       return count
 
 # Task 2
 def decompose_image(image, thresholds):
