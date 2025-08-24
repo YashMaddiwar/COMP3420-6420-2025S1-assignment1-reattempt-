@@ -122,7 +122,7 @@ def build_deep_nn(input_size, layer_options, output_size):
        """
        
        # Collect components for each hidden layer in separate "blocks"
-       # (this avoids the old pattern of appending everything to one list inside the loop).
+       # this avoids the old pattern of appending everything to one list inside the loop.
        
        blocks = []
        
@@ -132,8 +132,33 @@ def build_deep_nn(input_size, layer_options, output_size):
        for hidden_units, dropout_prob in layer_options:
               # Start a fresh block for this hidden layer.
               block = []
-       return None       
+              
+              # Linear transform from current input size -> hidden_units
+              block.append(nn.Linear(in_feats, hidden_units))
+              
+              # Nonlinearity after the linear projection
+              block.append(nn.ReLU())
+              
+              # To optimize the code more: only add Dropout when probability > 0
+              if dropout_prob and dropout_prob > 0:
+                     block.append(nn.Dropout(p=dropout_prob))
+                     
+              # Save this block in order and it will be flattened in later stages.
+              blocks.append(block)
+              
+              # The output of this block becomes the input size for the next block.
+              in_feats = hidden_units
+       
+       # Flatten the list of blocks into a single ordered list of modules.
+       layers = [module for block in blocks for module in block]
+       
+       layers.append(nn.Linear(in_feats, output_size))
+       
+       # Wrap the full list into a Sequential so modules are numbered (0,1,2,...).
+       return nn.Sequential(*layers)
+        
 
+       
 if __name__ == "__main__":
      import doctest
      doctest.testmod()
