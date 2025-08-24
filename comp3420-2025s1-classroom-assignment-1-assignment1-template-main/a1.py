@@ -71,6 +71,8 @@ def decompose_image(image, thresholds):
               [0, 0, 1],
               [0, 0, 1]])]
        """
+       # Ensure the input is a 2D NumPy array (grayscale image).
+       
        return None
 
 # Task 3
