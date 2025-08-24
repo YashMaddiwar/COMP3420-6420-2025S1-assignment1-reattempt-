@@ -1,0 +1,50 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: task1
+      id: task1
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: task1
+        setup-command: pip install numpy torch
+        command: python -m unittest a1_test.TestBasic.test_light_pixels
+        timeout: 10
+        max-score: 1
+    - name: task2
+      id: task2
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: task2
+        setup-command: pip install numpy torch
+        command: python -m unittest a1_test.TestBasic.test_decompose_image
+        timeout: 10
+        max-score: 1
+    - name: task3
+      id: task3
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: task3
+        setup-command: pip install numpy torch
+        command: python -m unittest a1_test.TestBasic.test_build_deep_nn
+        timeout: 10
+        max-score: 2
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TASK1_RESULTS: "${{steps.task1.outputs.result}}"
+        TASK2_RESULTS: "${{steps.task2.outputs.result}}"
+        TASK3_RESULTS: "${{steps.task3.outputs.result}}"
+      with:
+        runners: task1,task2,task3
