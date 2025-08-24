@@ -72,8 +72,21 @@ def decompose_image(image, thresholds):
               [0, 0, 1]])]
        """
        # Ensure the input is a 2D NumPy array (grayscale image).
+       if not isinstance(image, np.ndarray) or image.ndim != 2:
+              raise ValueError("Input must be a 2D numpy array (grayscale image).")
        
-       return None
+       # This will allow code to Convert thresholds into a list to allow multiple passes if needed.
+       thresholds_list = list(thresholds)
+       
+       # Define a small helper function to create one mask for a single threshold.
+       # For each pixel: if its value > threshold, mark it as 1; else mark it as 0.
+       def make_mask(t):
+              return np.where(image > t, 1, 0).astype(np.uint8)
+       
+       # We will now Use a list comprehension to build a binary mask for every threshold.
+       masks = [make_mask(t) for t in thresholds_list]
+       
+       return masks
 
 # Task 3
 def build_deep_nn(input_size, layer_options, output_size):
