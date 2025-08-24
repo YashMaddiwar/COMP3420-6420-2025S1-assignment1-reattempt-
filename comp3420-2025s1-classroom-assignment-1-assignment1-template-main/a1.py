@@ -120,6 +120,18 @@ def build_deep_nn(input_size, layer_options, output_size):
          (5): Linear(in_features=30, out_features=5, bias=True)
        )
        """
+       
+       # Collect components for each hidden layer in separate "blocks"
+       # (this avoids the old pattern of appending everything to one list inside the loop).
+       
+       blocks = []
+       
+       # Track how many features feed into the next Linear layer.
+       in_feats = input_size
+       
+       for hidden_units, dropout_prob in layer_options:
+              # Start a fresh block for this hidden layer.
+              block = []
        return None       
 
 if __name__ == "__main__":
